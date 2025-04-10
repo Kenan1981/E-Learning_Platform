@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Learning Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .main-container {
+            display: flex;
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #1a202c;
+            color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .sidebar a {
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            color: #4CAF50;
+        }
+
+        .content {
+            flex-grow: 1;
+            margin-left: 20px;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            background-color: #1a202c;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            background-color: #ddd;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar div {
+            background-color: #4caf50;
+            height: 100%;
+            width: 0%; /* Başlangıçta 0% */
+            transition: width 0.5s ease;
+        }
+
+        .video-section {
+            margin-top: 30px;
+        }
+
+        video {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        .annotations {
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .annotations h4 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .annotations ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+
+        .annotations li {
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .quiz-form label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .quiz-form input[type="radio"] {
+            transform: scale(1.5);
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 8px 15px; /* Küçültülmüş buton boyutları */
+            font-size: 1rem; /* Daha küçük font boyutu */
+            border: none;
+            border-radius: 8px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #4CAF50;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                padding: 10px;
+            }
+
+            .sidebar {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+            .content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Welcome, Kenan!</h2>
+            <a href="javascript:void(0)" onclick="showPage('home')">Home</a>
+            <a href="javascript:void(0)" onclick="showPage('courses')">Courses</a>
+            <a href="javascript:void(0)" onclick="showPage('quiz')">Quiz</a>
+            <a href="javascript:void(0)" onclick="showPage('profile')">Profile</a>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Home Page -->
+            <div id="home" class="page">
+                <header>
+                    <h1>E-Learning Platform</h1>
+                </header>
+                <h2>Welcome to Your Learning Platform!</h2>
+                <p>Here you can track your progress, take quizzes, and more.</p>
+
+                <!-- Progress Bar Example -->
+                <div class="progress-bar">
+                    <div id="progress-bar"></div>
+                </div>
+                <button onclick="startProgress()">Start Progress</button>
+
+                <h3>Latest Updates</h3>
+                <ul>
+                    <li>New course: Introduction to Programming</li>
+                    <li>Upcoming quiz on JavaScript next week.</li>
+                </ul>
+            </div>
+
+            <!-- Courses Page -->
+            <div id="courses" class="page hidden">
+                <header>
+                    <h1>Courses</h1>
+                </header>
+                <h2>Available Courses</h2>
+                <ul>
+                    <li>Course 1: Introduction to JavaScript</li>
+                    <li>Course 2: Advanced CSS</li>
+                    <li>Course 3: React for Beginners</li>
+                </ul>
+
+                <!-- Video Section -->
+                <div class="video-section">
+                    <h3>Introduction to JavaScript - Video</h3>
+                    <div class="loading" id="loading-message">Loading Video...</div>
+                    <video id="video" controls>
+                        <source src="path/to/your/video.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="annotations">
+                        <h4>Annotations</h4>
+                        <ul id="annotation-list">
+                            <li>JavaScript is a programming language used to create interactive effects within web browsers.</li>
+                            <li>Variables in JavaScript are used to store data.</li>
+                            <li>Functions are reusable blocks of code that can be executed when called.</li>
+                        </ul>
+                        <textarea id="new-annotation" placeholder="Add a new annotation..." rows="3"></textarea>
+                        <button onclick="addAnnotation()">Add</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Page -->
+            <div id="quiz" class="page hidden">
+                <header>
+                    <h1>Quiz</h1>
+                </header>
+                <h2>Quick Quiz: JavaScript Basics</h2>
+                <form class="quiz-form" id="quiz-form">
+                    <p>What is the result of 2 + 2?</p>
+                    <label><input type="radio" name="answer" value="3"> 3</label><br>
+                    <label><input type="radio" name="answer" value="4"> 4</label><br>
+                    <label><input type="radio" name="answer" value="5"> 5</label><br>
+                    <button type="submit">Answer</button>
+                </form>
+                <p id="quiz-feedback"></p>
+            </div>
+
+            <!-- Profile Page -->
+            <div id="profile" class="page hidden">
+                <header>
+                    <h1>Profile</h1>
+                </header>
+                <h2>Your Profile</h2>
+                <p>Name: Kenan</p>
+                <p>Email: kenan@example.com</p>
+                <p>Courses Enrolled: 3</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to show specific page
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                page.classList.add('hidden');
+            });
+
+            const currentPage = document.getElementById(pageId);
+            currentPage.classList.remove('hidden');
+        }
+
+        // Quiz form handling
+        const quizForm = document.getElementById('quiz-form');
+        const feedback = document.getElementById('quiz-feedback');
+
+        quizForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const selected = document.querySelector('input[name="answer"]:checked');
+            if (selected) {
+                if (selected.value === "4") {
+                    feedback.textContent = 'Correct!';
+                    feedback.style.color = 'green';
+                } else {
+                    feedback.textContent = 'Incorrect. Please try again.';
+                    feedback.style.color = 'red';
+                }
+            } else {
+                feedback.textContent = 'Please select an answer.';
+                feedback.style.color = 'orange';
+            }
+        });
+
+        // Dynamic Progress Bar
+        let progressInterval;
+
+        function startProgress() {
+            let width = 0;
+            progressInterval = setInterval(function() {
+                if (width >= 100) {
+                    clearInterval(progressInterval);
+                } else {
+                    width++;
+                    document.getElementById('progress-bar').style.width = width + '%';
+                }
+            }, 100); // Her 100ms'de %1 ilerleme
+        }
+
+        // Add Annotation dynamically
+        function addAnnotation() {
+            const newAnnotation = document.getElementById('new-annotation').value;
+            if (newAnnotation) {
+                const annotationList = document.getElementById('annotation-list');
+                const newLi = document.createElement('li');
+                newLi.textContent = newAnnotation;
+                annotationList.appendChild(newLi);
+                document.getElementById('new-annotation').value = '';
+            }
+        }
+
+        // Video load handling
+        const video = document.getElementById('video');
+        video.addEventListener('play', function() {
+            document.getElementById('loading-message').classList.add('hidden');
+        });
+    </script>
+</body>
+</html>
