@@ -1,737 +1,750 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no">
-  <title>LearnHub - Smart Learning Platform</title>
-  <style>
-    :root {
-      --primary: #2563eb;
-      --secondary: #3b82f6;
-      --success: #22c55e;
-      --danger: #ef4444;
-      --background: #f1f5f9;
-      --surface: #ffffff;
-      --text: #1e293b;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnHub Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #3b82f6;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      touch-action: manipulation;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--background);
-      color: var(--text);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--background);
+            color: var(--text);
+        }
 
-    .app-container {
-      max-width: 600px;
-      min-height: 100dvh;
-      margin: 0 auto;
-      background: var(--surface);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      position: relative;
-    }
+        header {
+            background: var(--surface);
+            box-shadow: var(--shadow);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-    .dashboard-header {
-      padding: 1.5rem;
-      background: var(--primary);
-      color: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
+        .brand {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
 
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      cursor: pointer;
-    }
+        .user-card {
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
 
-    .user-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--secondary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+        .user-info {
+            text-align: right;
+        }
 
-    .nav-buttons {
-      display: flex;
-      gap: 1rem;
-      padding: 1rem;
-      background: var(--surface);
-      position: sticky;
-      top: 76px;
-      z-index: 9;
-    }
+        .user-info small {
+            color: #64748b;
+        }
 
-    .nav-button {
-      flex: 1;
-      padding: 1rem;
-      border: none;
-      border-radius: 8px;
-      background: var(--background);
-      color: var(--text);
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
+        .progress-bar {
+            width: 100px;
+            height: 6px;
+            background: var(--background);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
 
-    .nav-button.active {
-      background: var(--primary);
-      color: white;
-    }
+        .progress {
+            height: 100%;
+            background: var(--primary);
+            width: 65%;
+        }
 
-    .content-section {
-      display: none;
-      padding: 1.5rem;
-    }
+        .user-menu {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 0.5rem;
+            min-width: 160px;
+            display: none;
+        }
 
-    .content-section.active {
-      display: block;
-    }
+        .user-menu.active {
+            display: block;
+        }
 
-    .course-grid {
-      display: grid;
-      gap: 1rem;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    }
+        .container {
+            padding: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-    .course-card {
-      background: var(--surface);
-      border-radius: 12px;
-      padding: 1.25rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      cursor: pointer;
-      position: relative;
-    }
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
 
-    .lesson-list {
-      margin-top: 1rem;
-      display: none;
-    }
+        .course-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 1rem;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
 
-    .lesson-item {
-      padding: 0.75rem;
-      margin: 0.5rem 0;
-      background: var(--background);
-      border-radius: 8px;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
+        .course-card:hover {
+            transform: translateY(-3px);
+        }
 
-    .lesson-item:hover {
-      transform: translateX(5px);
-    }
+        .back-button {
+            margin-bottom: 1rem;
+            background: var(--primary);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-    .quiz-container {
-      position: relative;
-    }
+        .lesson-list {
+            display: grid;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
 
-    .quiz-progress {
-      height: 4px;
-      background: rgba(0,0,0,0.1);
-      margin-bottom: 1.5rem;
-      border-radius: 2px;
-    }
+        .lesson-item {
+            padding: 1rem;
+            background: var(--surface);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    .quiz-progress-fill {
-      height: 100%;
-      background: var(--primary);
-      width: calc((var(--current-question) / var(--total-questions)) * 100%);
-      transition: width 0.3s ease;
-    }
+        .lesson-item:hover {
+            background: var(--background);
+        }
 
-    .quiz-question {
-      font-size: 1.25rem;
-      margin-bottom: 1.5rem;
-      font-weight: 600;
-    }
+        .video-section {
+            margin: 1rem 0;
+        }
 
-    .quiz-option {
-      width: 100%;
-      padding: 1rem;
-      margin-bottom: 0.75rem;
-      border: 2px solid var(--background);
-      border-radius: 8px;
-      background: var(--surface);
-      text-align: left;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
+        #lessonVideo {
+            width: 100%;
+            border-radius: var(--radius);
+            aspect-ratio: 16/9;
+        }
 
-    .quiz-option.correct {
-      background: var(--success);
-      border-color: var(--success);
-      color: white;
-    }
+        .notes-section {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-top: 1rem;
+        }
 
-    .quiz-option.incorrect {
-      background: var(--danger);
-      border-color: var(--danger);
-      color: white;
-    }
+        .note-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--background);
+            border-radius: var(--radius);
+            margin: 0.5rem 0;
+            min-height: 100px;
+            font-family: inherit;
+        }
 
-    .video-player {
-      width: 100%;
-      border-radius: 12px;
-      overflow: hidden;
-      margin-bottom: 1.5rem;
-    }
+        .note-item {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin: 0.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
 
-    .notes-section {
-      margin-top: 1.5rem;
-    }
+        .note-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
 
-    .note-input {
-      width: 100%;
-      padding: 1rem;
-      border: 2px solid var(--background);
-      border-radius: 8px;
-      margin-bottom: 1rem;
-      resize: vertical;
-    }
+        .button {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-    .note-list {
-      display: grid;
-      gap: 0.75rem;
-    }
+        .primary-button {
+            background: var(--primary);
+            color: white;
+        }
 
-    .note-item {
-      padding: 1rem;
-      background: var(--background);
-      border-radius: 8px;
-      position: relative;
-    }
+        .primary-button:hover {
+            background: var(--secondary);
+        }
 
-    .announcement-carousel {
-      margin: 1rem 0;
-      border-radius: 12px;
-      overflow: hidden;
-    }
+        .danger-button {
+            background: var(--danger);
+            color: white;
+        }
 
-    .announcement-card {
-      padding: 1rem;
-      background: var(--background);
-      margin: 0.5rem;
-      border-radius: 8px;
-    }
+        .danger-button:hover {
+            opacity: 0.9;
+        }
 
-    .ad-banner {
-      padding: 1.5rem;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      border-radius: 12px;
-      margin: 1rem 0;
-      text-align: center;
-    }
+        .quiz-section {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-top: 1rem;
+            display: none;
+        }
 
-    .progress-card {
-      padding: 1.5rem;
-      background: var(--background);
-      border-radius: 12px;
-      margin-bottom: 1rem;
-    }
+        .quiz-card {
+            margin-bottom: 1rem;
+        }
 
-    .progress-bar {
-      height: 8px;
-      background: rgba(0,0,0,0.1);
-      border-radius: 4px;
-      overflow: hidden;
-      margin: 1rem 0;
-    }
+        .quiz-options {
+            display: grid;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
 
-    .progress-fill {
-      height: 100%;
-      background: var(--primary);
-      transition: width 0.3s ease;
-    }
+        .quiz-option {
+            padding: 1rem;
+            background: var(--background);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
 
-    .back-button {
-      background: none;
-      border: none;
-      color: var(--primary);
-      font-weight: 600;
-      cursor: pointer;
-      margin-bottom: 1rem;
-    }
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: #dcfce7;
+        }
 
-    .user-modal {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      z-index: 100;
-    }
+        .quiz-option.wrong {
+            border-color: var(--danger);
+            background: #fee2e2;
+        }
 
-    .overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 99;
-    }
+        .quiz-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
 
-    .courses-container {
-      display: grid;
-      gap: 1.5rem;
-    }
+        .progress-bar {
+            height: 4px;
+            background: var(--background);
+            border-radius: var(--radius);
+            margin: 1rem 0;
+        }
 
-    .course-lessons {
-      background: var(--background);
-      border-radius: 12px;
-      padding: 1rem;
-    }
+        .progress {
+            height: 100%;
+            background: var(--primary);
+            transition: var(--transition);
+            width: 0%;
+        }
 
-    .lesson-card {
-      padding: 1rem;
-      margin: 0.5rem 0;
-      background: var(--surface);
-      border-radius: 8px;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
+        .quiz-report {
+            display: none;
+            text-align: center;
+            padding: 1rem;
+        }
 
-    .lesson-card:hover {
-      transform: translateX(5px);
-    }
-
-    @media (pointer: coarse) {
-      .nav-button {
-        padding: 1.25rem;
-      }
-      
-      .quiz-option {
-        padding: 1.25rem;
-      }
-    }
-  </style>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        .quiz-page {
+            display: none;
+        }
+        
+        .course-quiz-card {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin: 1rem 0;
+            box-shadow: var(--shadow);
+        }
+    </style>
 </head>
 <body>
-  <div class="app-container">
-    <header class="dashboard-header">
-      <h1>e-HubbelLearn</h1>
-      <div class="user-info">
-        <div class="user-avatar">
-          <i class="fas fa-user"></i>
+    <header>
+        <div class="brand">LearnHub Pro</div>
+        <div class="user-card" onclick="toggleUserMenu()">
+            <div class="user-info">
+                <div>Ahmet Yılmaz</div>
+                <small>Seviye 3</small>
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+            </div>
+            <i class="fas fa-user-circle fa-2x"></i>
+            <div class="user-menu">
+                <div class="menu-item" onclick="showPage('courseList')">
+                    <i class="fas fa-book"></i> Kurslar
+                </div>
+                <div class="menu-item" onclick="showPage('quizPage')">
+                    <i class="fas fa-question-circle"></i> Sınavlar
+                </div>
+                <div class="menu-item" onclick="showProfile()">
+                    <i class="fas fa-user"></i> Profil
+                </div>
+                <div class="menu-item" onclick="showSettings()">
+                    <i class="fas fa-cog"></i> Ayarlar
+                </div>
+                <div class="menu-item" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+                </div>
+            </div>
         </div>
-        <span>Guest User</span>
-      </div>
     </header>
 
-    <nav class="nav-buttons">
-      <button class="nav-button active" data-section="home">Home</button>
-      <button class="nav-button" data-section="courses">Courses</button>
-      <button class="nav-button" data-section="quiz">Quiz</button>
-    </nav>
-
-    <section id="home" class="content-section active">
-      <div class="progress-card">
-        <h3>Overall Progress</h3>
-        <div class="progress-bar">
-          <div class="progress-fill" style="width: 65%"></div>
+    <div class="container">
+        <div id="courseList">
+            <div class="course-grid"></div>
         </div>
-        <div class="user-stats">
-          <div>Completed Courses: 3/5</div>
-          <div>Quiz Score: 85%</div>
-        </div>
-      </div>
 
-      <div class="announcement-carousel">
-        <div class="announcement-card">
-          <h4>🆕 New Features!</h4>
-          <p>Now you can save your notes to cloud storage</p>
-          <small>2 days ago</small>
-        </div>
-      </div>
-
-      <div class="ad-banner">
-        📢 Special discount! <strong>50% off</strong> for premium membership
-      </div>
-
-      <div class="course-grid">
-        <div class="course-card" data-course="1">
-          <h3>HTML Fundamentals</h3>
-          <p>4 Lessons • 35 Minutes</p>
-          <div class="lesson-list"></div>
-        </div>
-        <div class="course-card" data-course="2">
-          <h3>CSS Styling</h3>
-          <p>6 Lessons • 55 Minutes</p>
-          <div class="lesson-list"></div>
-        </div>
-        <div class="course-card" data-course="3">
-          <h3>JavaScript Basics</h3>
-          <p>5 Lessons • 45 Minutes</p>
-          <div class="lesson-list"></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="courses" class="content-section">
-      <button class="back-button" onclick="showHomePage()">
-        <i class="fas fa-arrow-left"></i> Back
-      </button>
-      <div class="courses-container">
-        <div id="coursesList"></div>
-        <div class="video-player">
-          <video controls width="100%" id="lesson-video">
-            <source src="" type="video/mp4">
-          </video>
-        </div>
-        <div class="notes-section">
-          <textarea class="note-input" placeholder="Take notes..." id="noteInput"></textarea>
-          <button class="nav-button" type="button" onclick="saveNote()">Save Note</button>
-          <div class="note-list" id="note-container"></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="quiz" class="content-section">
-      <div class="quiz-container">
-        <div class="quiz-progress">
-          <div class="quiz-progress-fill" style="--current-question: 1; --total-questions: 3"></div>
-        </div>
-        <div class="quiz-question" id="question">What is the capital of France?</div>
-        <div class="quiz-options" id="options">
-          <button class="quiz-option">Paris</button>
-          <button class="quiz-option">London</button>
-          <button class="quiz-option">Berlin</button>
-          <button class="quiz-option">Madrid</button>
-        </div>
-      </div>
-    </section>
-
-    <div class="overlay" id="overlay"></div>
-    <div class="user-modal" id="userModal">
-      <h3>User Profile</h3>
-      <div id="userDetails"></div>
-      <button class="nav-button" onclick="closeUserModal()">Close</button>
-    </div>
-  </div>
-
-  <script>
-    const state = {
-      currentUser: {
-        id: 1,
-        name: "Guest User",
-        progress: 65,
-        completedCourses: 3,
-        quizScore: 85,
-        enrolledCourses: [1, 3, 5]
-      },
-      currentLesson: null,
-      announcements: [
-        {
-          title: "🆕 New Features!",
-          content: "Now you can save your notes to cloud storage",
-          date: "2023-07-20"
-        }
-      ],
-      ads: [
-        {
-          content: "📢 Special discount! <strong>50% off</strong> for premium membership",
-          type: "premium"
-        }
-      ],
-      courses: [
-        {
-          id: 1,
-          title: "HTML Fundamentals",
-          lessons: [
-            {
-              id: 1,
-              title: "Introduction to HTML",
-              duration: "10:00",
-              video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
-              notes: []
-            },
-            {
-              id: 2,
-              title: "Basic Tags",
-              duration: "15:00",
-              video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
-              notes: []
-            }
-          ]
-        },
-        {
-          id: 2,
-          title: "CSS Styling",
-          lessons: [
-            {
-              id: 3,
-              title: "CSS Selectors",
-              duration: "20:00",
-              video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
-              notes: []
-            }
-          ]
-        },
-        {
-          id: 3,
-          title: "JavaScript Basics",
-          lessons: [
-            {
-              id: 4,
-              title: "Variables & Data Types",
-              duration: "25:00",
-              video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
-              notes: []
-            },
-            {
-              id: 5,
-              title: "Functions",
-              duration: "20:00",
-              video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
-              notes: []
-            }
-          ]
-        }
-      ],
-      quiz: {
-        currentQuestion: 0,
-        totalQuestions: 3,
-        correctAnswers: 0,
-        questions: [
-          {
-            question: "What is the capital of France?",
-            options: ["Paris", "London", "Berlin", "Madrid"],
-            correct: "Paris"
-          },
-          {
-            question: "What is 2 + 2?",
-            options: ["3", "4", "5", "6"],
-            correct: "4"
-          },
-          {
-            question: "What does HTML stand for?",
-            options: [
-              "Hyper Text Markup Language",
-              "Home Tool Markup Language",
-              "Hyperlinks and Text Markup Language",
-              "Hyper Transfer Markup Language"
-            ],
-            correct: "Hyper Text Markup Language"
-          }
-        ]
-      }
-    };
-
-    document.querySelector('.user-info').addEventListener('click', showUserDetails);
-    
-    document.querySelectorAll('.nav-button').forEach(button => {
-      button.addEventListener('click', () => {
-        const section = button.dataset.section;
-        document.querySelectorAll('.nav-button').forEach(b => b.classList.remove('active'));
-        button.classList.add('active');
-        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-        document.getElementById(section).classList.add('active');
-        if(section === 'quiz') loadQuizQuestion();
-        if(section === 'home') renderHomeContent();
-        if(section === 'courses') renderCoursesContent();
-      });
-    });
-
-    function renderCoursesContent() {
-      const container = document.getElementById('coursesList');
-      container.innerHTML = state.courses.map(course => `
-        <div class="course-lessons">
-          <h3>${course.title}</h3>
-          ${course.lessons.map(lesson => `
-            <div class="lesson-card" data-lesson="${lesson.id}">
-              <div>${lesson.title}</div>
-              <small>${lesson.duration}</small>
+        <div id="courseDetail" style="display: none;">
+            <button class="back-button" onclick="ui.showCourseList()">
+                <i class="fas fa-arrow-left"></i> Geri
+            </button>
+            <div class="lesson-list"></div>
+            <div class="video-section">
+                <video controls id="lessonVideo"></video>
+                <div class="notes-section">
+                    <textarea class="note-input" id="noteInput" placeholder="Notunuzu buraya yazın..."></textarea>
+                    <button class="button primary-button" onclick="ui.saveNote()">
+                        <i class="fas fa-save"></i> Kaydet
+                    </button>
+                    <div id="noteContainer" class="note-list"></div>
+                </div>
             </div>
-          `).join('')}
+            <div class="quiz-section">
+                <button class="button primary-button" onclick="ui.startQuiz()">Sınava Başla</button>
+                <div class="quiz-card">
+                    <h3 id="quizQuestion"></h3>
+                    <div class="quiz-options" id="quizOptions"></div>
+                    <div class="progress-bar">
+                        <div class="progress" id="quizProgress"></div>
+                    </div>
+                    <div class="quiz-navigation">
+                        <button class="button" onclick="ui.prevQuestion()" id="prevBtn">Önceki</button>
+                        <span id="questionCounter"></span>
+                        <button class="button" onclick="ui.nextQuestion()" id="nextBtn">Sonraki</button>
+                    </div>
+                </div>
+                <div class="quiz-report" id="quizReport">
+                    <h3>Sınav Sonucu</h3>
+                    <p>Doğru: <span id="correctCount">0</span></p>
+                    <p>Yanlış: <span id="wrongCount">0</span></p>
+                </div>
+            </div>
         </div>
-      `).join('');
-      
-      document.querySelectorAll('.lesson-card').forEach(card => {
-        card.addEventListener('click', () => {
-          const lessonId = parseInt(card.dataset.lesson);
-          const lesson = state.courses.flatMap(c => c.lessons).find(l => l.id === lessonId);
-          state.currentLesson = lesson;
-          const videoPlayer = document.getElementById('lesson-video');
-          videoPlayer.src = lesson.video;
-          videoPlayer.load();
-          updateNoteList();
-        });
-      });
-    }
 
-    function showUserDetails() {
-      const user = state.currentUser;
-      document.getElementById('userDetails').innerHTML = `
-        <p>Name: ${user.name}</p>
-        <p>Progress: ${user.progress}%</p>
-        <p>Completed Courses: ${user.completedCourses}</p>
-        <p>Quiz Score: ${user.quizScore}%</p>
-      `;
-      document.getElementById('userModal').style.display = 'block';
-      document.getElementById('overlay').style.display = 'block';
-    }
+        <div id="quizPage" class="quiz-page">
+            <h2>Tüm Sınavlar</h2>
+            <div id="quizList"></div>
+        </div>
+    </div>
 
-    function closeUserModal() {
-      document.getElementById('userModal').style.display = 'none';
-      document.getElementById('overlay').style.display = 'none';
-      showHomePage();
-    }
+    <script>
+        class QuizManager {
+            constructor() {
+                this.questions = [];
+                this.currentQuestionIndex = 0;
+                this.score = { correct: 0, wrong: 0 };
+                this.userAnswers = [];
+                this.allQuestions = {
+                    1: {courseId: 1, title: "Fizik Sınavları", questions: [
+                        {question: "Kuvvetin SI birimi nedir?", options: ["Newton", "Joule", "Watt"], answer: 0},
+                        {question: "Hareket yasalarını kim formüle etmiştir?", options: ["Newton", "Einstein", "Galileo"], answer: 0}
+                    ]},
+                    2: {courseId: 2, title: "Kimya Sınavları", questions: [
+                        {question: "Karbonun atom numarası nedir?", options: ["6", "12", "14"], answer: 0}
+                    ]},
+                    3: {courseId: 3, title: "Biyoloji Sınavları", questions: [
+                        {question: "Mitokondri hücrenin...?", options: ["Enerji üretim merkezi", "Çekirdek", "Sentez merkezi"], answer: 0}
+                    ]}
+                };
+            }
 
-    function showHomePage() {
-      document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-      document.getElementById('home').classList.add('active');
-      document.querySelectorAll('.nav-button').forEach(b => b.classList.remove('active'));
-      document.querySelector('[data-section="home"]').classList.add('active');
-    }
+            initQuestions(lessonId) {
+                const quizData = {
+                    1: [
+                        {question: "Hız nedir?", options: ["Yönü olan sürat", "İvme oranı", "Konum değişimi"], answer: 0},
+                        {question: "F=ma neyi temsil eder?", options: ["Newton'un İkinci Yasası", "Ohm Yasası", "Yerçekimi Yasası"], answer: 0}
+                    ],
+                    2: [
+                        {question: "Saf suyun pH değeri nedir?", options: ["7", "5", "10"], answer: 0}
+                    ],
+                    3: [
+                        {question: "Fotosentez nerede gerçekleşir?", options: ["Kloroplast", "Mitokondri", "Ribozom"], answer: 0}
+                    ]
+                };
+                this.questions = quizData[lessonId] || [];
+                this.resetProgress();
+            }
 
-    function saveNote() {
-      const input = document.getElementById('noteInput');
-      if(input.value.trim() && state.currentLesson) {
-        const newNote = {
-          content: input.value,
-          timestamp: new Date().toLocaleString()
-        };
-        
-        state.courses = state.courses.map(course => ({
-          ...course,
-          lessons: course.lessons.map(lesson => 
-            lesson.id === state.currentLesson.id 
-              ? {...lesson, notes: [...lesson.notes, newNote]}
-              : lesson
-          )
-        }));
-        
-        state.currentLesson = state.courses
-          .flatMap(c => c.lessons)
-          .find(l => l.id === state.currentLesson.id);
+            getQuizByCourse(courseId) {
+                return this.allQuestions[courseId] || null;
+            }
 
-        input.value = '';
-        updateNoteList();
-        const noteContainer = document.getElementById('note-container');
-        noteContainer.scrollTop = noteContainer.scrollHeight;
-        showHomePage();
-      }
-    }
+            getAllQuizzes() {
+                return Object.values(this.allQuestions);
+            }
 
-    function updateNoteList() {
-      const container = document.getElementById('note-container');
-      if(state.currentLesson?.notes?.length) {
-        container.innerHTML = state.currentLesson.notes.map(note => `
-          <div class="note-item">
-            <p>${note.content}</p>
-            <small>${note.timestamp}</small>
-          </div>
-        `).join('');
-      } else {
-        container.innerHTML = '<p class="no-notes">No notes yet. Add your first note!</p>';
-      }
-    }
+            resetProgress() {
+                this.currentQuestionIndex = 0;
+                this.score = { correct: 0, wrong: 0 };
+                this.userAnswers = [];
+            }
 
-    function loadQuizQuestion() {
-      const current = state.quiz.questions[state.quiz.currentQuestion];
-      document.getElementById('question').textContent = current.question;
-      const options = document.getElementById('options');
-      options.innerHTML = '';
-      current.options.forEach(option => {
-        const btn = document.createElement('button');
-        btn.className = 'quiz-option';
-        btn.textContent = option;
-        btn.onclick = () => checkAnswer(option, current.correct);
-        options.appendChild(btn);
-      });
-      document.querySelector('.quiz-progress-fill').style.width = 
-        `${((state.quiz.currentQuestion + 1) / state.quiz.totalQuestions) * 100}%`;
-    }
+            get currentQuestion() {
+                return this.questions[this.currentQuestionIndex];
+            }
 
-    function checkAnswer(selected, correct) {
-      const options = document.querySelectorAll('.quiz-option');
-      options.forEach(opt => {
-        if(opt.textContent === correct) opt.classList.add('correct');
-        if(opt.textContent === selected && selected !== correct) opt.classList.add('incorrect');
-        opt.disabled = true;
-      });
-
-      if(selected === correct) state.quiz.correctAnswers++;
-      
-      setTimeout(() => {
-        state.quiz.currentQuestion++;
-        if(state.quiz.currentQuestion < state.quiz.totalQuestions) {
-          loadQuizQuestion();
-        } else {
-          showQuizResults();
+            checkAnswer(selectedIndex) {
+                const isCorrect = selectedIndex === this.currentQuestion.answer;
+                if (isCorrect) this.score.correct++;
+                else this.score.wrong++;
+                this.userAnswers[this.currentQuestionIndex] = selectedIndex;
+                return isCorrect;
+            }
         }
-      }, 1500);
-    }
 
-    function showQuizResults() {
-      const resultHTML = `
-        <div class="course-card">
-          <h3>Quiz Complete!</h3>
-          <p>Score: ${state.quiz.correctAnswers}/${state.quiz.totalQuestions}</p>
-          <button class="nav-button" id="retryButton">Retry Quiz</button>
-        </div>
-      `;
-      document.getElementById('quiz').innerHTML = resultHTML;
-      document.getElementById('retryButton').addEventListener('click', resetQuiz);
-    }
+        class CourseManager {
+            constructor() {
+                this.courses = JSON.parse(localStorage.getItem('courses')) || this.getDefaultCourses();
+                this.currentCourse = null;
+                this.currentLesson = null;
+                this.quizManager = new QuizManager();
+            }
 
-    function resetQuiz() {
-      state.quiz.currentQuestion = 0;
-      state.quiz.correctAnswers = 0;
-      document.getElementById('quiz').innerHTML = `
-        <div class="quiz-container">
-          <div class="quiz-progress">
-            <div class="quiz-progress-fill" style="--current-question: 1; --total-questions: ${state.quiz.totalQuestions}"></div>
-          </div>
-          <div class="quiz-question" id="question"></div>
-          <div class="quiz-options" id="options"></div>
-        </div>
-      `;
-      loadQuizQuestion();
-      document.querySelector(`[data-section="quiz"]`).click();
-    }
+            getDefaultCourses() {
+                return [
+                    {
+                        id: 1,
+                        title: "Fizik",
+                        description: "Temel fizik prensiplerini öğrenin",
+                        lessons: [
+                            {id: 1, title: "Newton Mekaniği", video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4", notes: []},
+                            {id: 2, title: "Termodinamik", video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4", notes: []}
+                        ]
+                    },
+                    {
+                        id: 2,
+                        title: "Kimya",
+                        description: "Temel kimya prensiplerini keşfedin",
+                        lessons: [
+                            {id: 1, title: "Atom Yapısı", video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4", notes: []},
+                            {id: 2, title: "Kimyasal Tepkimeler", video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4", notes: []}
+                        ]
+                    },
+                    {
+                        id: 3,
+                        title: "Biyoloji",
+                        description: "Yaşam bilimini inceleyin",
+                        lessons: [
+                            {id: 1, title: "Hücre Biyolojisi", video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4", notes: []},
+                            {id: 2, title: "Genetik", video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4", notes: []}
+                        ]
+                    }
+                ];
+            }
 
-    function renderHomeContent() {
-      const homeSection = document.getElementById('home');
-      const announcementContainer = homeSection.querySelector('.announcement-carousel');
-      announcementContainer.innerHTML = state.announcements.map(ann => `
-        <div class="announcement-card">
-          <h4>${ann.title}</h4>
-          <p>${ann.content}</p>
-          <small>${new Date(ann.date).toLocaleDateString()}</small>
-        </div>
-      `).join('');
-      const adContainer = homeSection.querySelector('.ad-banner');
-      adContainer.innerHTML = state.ads[0].content;
-    }
+            saveCourses() {
+                localStorage.setItem('courses', JSON.stringify(this.courses));
+            }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      renderHomeContent();
-      updateNoteList();
-    });
-  </script>
+            addNote(noteText) {
+                if (!this.currentLesson) return;
+                const note = {id: Date.now(), content: noteText, timestamp: new Date().toLocaleString()};
+                const lesson = this.currentCourse.lessons.find(lesson => lesson.id === this.currentLesson.id);
+                lesson.notes.push(note);
+                this.saveCourses();
+                return note;
+            }
+
+            deleteNote(noteId) {
+                const lesson = this.currentCourse.lessons.find(lesson => lesson.id === this.currentLesson.id);
+                lesson.notes = lesson.notes.filter(note => note.id !== noteId);
+                this.saveCourses();
+            }
+
+            getNotes() {
+                if (!this.currentLesson) return [];
+                return this.currentCourse.lessons.find(lesson => lesson.id === this.currentLesson.id).notes;
+            }
+        }
+
+        class UI {
+            constructor() {
+                this.courseManager = new CourseManager();
+                this.init();
+            }
+
+            init() {
+                this.renderCourses();
+                this.initEventListeners();
+            }
+
+            initEventListeners() {
+                document.addEventListener('click', (e) => {
+                    if(!e.target.closest('.user-card')) {
+                        document.querySelector('.user-menu').classList.remove('active');
+                    }
+                });
+            }
+
+            renderCourses() {
+                const grid = document.querySelector('.course-grid');
+                grid.innerHTML = this.courseManager.courses.map(course => `
+                    <div class="course-card" onclick="ui.showCourseDetail(${course.id})">
+                        <h3>${course.title}</h3>
+                        <p>${course.description}</p>
+                        <small>${course.lessons.length} ders</small>
+                    </div>
+                `).join('');
+            }
+
+            showCourseDetail(courseId) {
+                this.courseManager.currentCourse = this.courseManager.courses.find(course => course.id === courseId);
+                document.getElementById('courseList').style.display = 'none';
+                document.getElementById('courseDetail').style.display = 'block';
+                this.renderLessons();
+            }
+
+            showCourseList() {
+                document.getElementById('courseList').style.display = 'block';
+                document.getElementById('courseDetail').style.display = 'none';
+                this.courseManager.currentCourse = null;
+                this.courseManager.currentLesson = null;
+            }
+
+            renderLessons() {
+                const list = document.querySelector('.lesson-list');
+                list.innerHTML = this.courseManager.currentCourse.lessons.map(lesson => `
+                    <div class="lesson-item" onclick="ui.loadLesson(${lesson.id})">
+                        <span>${lesson.title}</span>
+                        <small>${lesson.notes.length} not</small>
+                    </div>
+                `).join('');
+            }
+
+            loadLesson(lessonId) {
+                this.courseManager.currentLesson = this.courseManager.currentCourse.lessons.find(lesson => lesson.id === lessonId);
+                const videoPlayer = document.getElementById('lessonVideo');
+                videoPlayer.src = this.courseManager.currentLesson.video;
+                videoPlayer.load();
+                this.renderNotes();
+            }
+
+            renderNotes() {
+                const notes = this.courseManager.getNotes();
+                const container = document.getElementById('noteContainer');
+                container.innerHTML = notes.map(note => `
+                    <div class="note-item">
+                        <div>
+                            <p>${note.content}</p>
+                            <small>${note.timestamp}</small>
+                        </div>
+                        <div class="note-actions">
+                            <button class="button danger-button" onclick="ui.deleteNote(${note.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            saveNote() {
+                const input = document.getElementById('noteInput');
+                const text = input.value.trim();
+                if(text && this.courseManager.currentLesson) {
+                    this.courseManager.addNote(text);
+                    this.renderNotes();
+                    input.value = '';
+                    input.focus();
+                }
+            }
+
+            deleteNote(noteId) {
+                this.courseManager.deleteNote(noteId);
+                this.renderNotes();
+            }
+
+            startQuiz() {
+                if (!this.courseManager.currentLesson) return;
+                this.courseManager.quizManager.initQuestions(this.courseManager.currentLesson.id);
+                this.renderQuiz();
+            }
+
+            renderQuiz() {
+                document.querySelector('.quiz-section').style.display = 'block';
+                this.showQuestion();
+            }
+
+            showQuestion() {
+                const quiz = this.courseManager.quizManager;
+                if (!quiz.questions.length) {
+                    alert('Bu ders için sınav bulunamadı!');
+                    return;
+                }
+
+                document.getElementById('quizQuestion').textContent = quiz.currentQuestion.question;
+                const optionsContainer = document.getElementById('quizOptions');
+                optionsContainer.innerHTML = quiz.currentQuestion.options.map((option, index) => `
+                    <div class="quiz-option" onclick="ui.selectAnswer(${index})">${option}</div>
+                `).join('');
+
+                document.getElementById('questionCounter').textContent = 
+                    `${quiz.currentQuestionIndex + 1}/${quiz.questions.length}`;
+                
+                document.getElementById('quizProgress').style.width = 
+                    `${(quiz.currentQuestionIndex / quiz.questions.length) * 100}%`;
+
+                document.getElementById('prevBtn').disabled = quiz.currentQuestionIndex === 0;
+                document.getElementById('nextBtn').textContent = 
+                    quiz.currentQuestionIndex === quiz.questions.length - 1 ? 'Bitir' : 'Sonraki';
+            }
+
+            selectAnswer(selectedIndex) {
+                const quiz = this.courseManager.quizManager;
+                const options = document.querySelectorAll('.quiz-option');
+                const isCorrect = quiz.checkAnswer(selectedIndex);
+
+                options.forEach((option, index) => {
+                    option.classList.remove('correct', 'wrong');
+                    if (index === quiz.currentQuestion.answer) option.classList.add('correct');
+                    else if (index === selectedIndex && !isCorrect) option.classList.add('wrong');
+                });
+            }
+
+            nextQuestion() {
+                const quiz = this.courseManager.quizManager;
+                if (quiz.currentQuestionIndex === quiz.questions.length - 1) this.showReport();
+                else {
+                    quiz.currentQuestionIndex++;
+                    this.showQuestion();
+                }
+            }
+
+            prevQuestion() {
+                const quiz = this.courseManager.quizManager;
+                if (quiz.currentQuestionIndex > 0) {
+                    quiz.currentQuestionIndex--;
+                    this.showQuestion();
+                }
+            }
+
+            showReport() {
+                const quiz = this.courseManager.quizManager;
+                document.querySelector('.quiz-card').style.display = 'none';
+                document.getElementById('quizReport').style.display = 'block';
+                document.getElementById('correctCount').textContent = quiz.score.correct;
+                document.getElementById('wrongCount').textContent = quiz.score.wrong;
+            }
+
+            showQuizPage() {
+                document.getElementById('courseList').style.display = 'none';
+                document.getElementById('courseDetail').style.display = 'none';
+                document.getElementById('quizPage').style.display = 'block';
+                this.renderQuizList();
+            }
+
+            renderQuizList() {
+                const quizzes = this.courseManager.quizManager.getAllQuizzes();
+                const container = document.getElementById('quizList');
+                
+                container.innerHTML = quizzes.map(quiz => `
+                    <div class="course-quiz-card">
+                        <h3>${quiz.title}</h3>
+                        <p>${quiz.questions.length} soru</p>
+                        <button class="button primary-button" onclick="ui.startCourseQuiz(${quiz.courseId})">
+                            Sınava Başla
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            startCourseQuiz(courseId) {
+                const quiz = this.courseManager.quizManager.getQuizByCourse(courseId);
+                if(!quiz) return alert('Sınav bulunamadı!');
+                
+                this.courseManager.quizManager.questions = quiz.questions;
+                this.courseManager.quizManager.resetProgress();
+                this.showPage('courseDetail');
+                this.renderQuiz();
+            }
+
+            showPage(pageName) {
+                const pages = ['courseList', 'courseDetail', 'quizPage'];
+                pages.forEach(page => document.getElementById(page).style.display = 'none');
+                document.getElementById(pageName).style.display = 'block';
+                
+                if(pageName === 'quizPage') this.renderQuizList();
+                if(pageName === 'courseList') this.renderCourses();
+            }
+        }
+
+        function toggleUserMenu() {
+            document.querySelector('.user-menu').classList.toggle('active');
+        }
+
+        function showProfile() {
+            alert('Profil sayfası yakında gelecek!');
+        }
+
+        function showSettings() {
+            alert('Ayarlar sayfası yakında gelecek!');
+        }
+
+        function logout() {
+            if(confirm('Çıkış yapmak istediğinize emin misiniz?')) window.location.reload();
+        }
+
+        function showPage(pageName) {
+            ui.showPage(pageName);
+        }
+
+        const ui = new UI();
+        window.ui = ui;
+    </script>
 </body>
 </html>
