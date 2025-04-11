@@ -23,6 +23,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -227,16 +228,27 @@
             opacity: 0.9;
         }
 
-        .quiz-section {
-            background: var(--surface);
-            padding: 1rem;
-            border-radius: var(--radius);
-            margin-top: 1rem;
+        .quiz-page {
             display: none;
         }
 
-        .quiz-card {
+        .quiz-detail-page {
+            display: none;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 1rem;
+        }
+
+        .quiz-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin: 1rem 0;
         }
 
         .quiz-options {
@@ -267,39 +279,14 @@
         .quiz-navigation {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             margin-top: 1rem;
-        }
-
-        .progress-bar {
-            height: 4px;
-            background: var(--background);
-            border-radius: var(--radius);
-            margin: 1rem 0;
-        }
-
-        .progress {
-            height: 100%;
-            background: var(--primary);
-            transition: var(--transition);
-            width: 0%;
         }
 
         .quiz-report {
             display: none;
             text-align: center;
             padding: 1rem;
-        }
-
-        .quiz-page {
-            display: none;
-        }
-        
-        .course-quiz-card {
-            background: var(--surface);
-            padding: 1rem;
-            border-radius: var(--radius);
-            margin: 1rem 0;
-            box-shadow: var(--shadow);
         }
     </style>
 </head>
@@ -316,17 +303,14 @@
             </div>
             <i class="fas fa-user-circle fa-2x"></i>
             <div class="user-menu">
-                <div class="menu-item" onclick="showPage('courseList')">
+                <div class="menu-item" onclick="ui.showPage('courseList')">
                     <i class="fas fa-book"></i> Kurslar
                 </div>
-                <div class="menu-item" onclick="showPage('quizPage')">
+                <div class="menu-item" onclick="ui.showPage('quizPage')">
                     <i class="fas fa-question-circle"></i> Sınavlar
                 </div>
-                <div class="menu-item" onclick="showProfile()">
-                    <i class="fas fa-user"></i> Profil
-                </div>
-                <div class="menu-item" onclick="showSettings()">
-                    <i class="fas fa-cog"></i> Ayarlar
+                <div class="menu-item" onclick="ui.toggleTheme()">
+                    <i class="fas fa-moon"></i> Tema
                 </div>
                 <div class="menu-item" onclick="logout()">
                     <i class="fas fa-sign-out-alt"></i> Çıkış Yap
@@ -336,10 +320,12 @@
     </header>
 
     <div class="container">
+        <!-- Kurs Listesi -->
         <div id="courseList">
             <div class="course-grid"></div>
         </div>
 
+        <!-- Kurs Detay Sayfası -->
         <div id="courseDetail" style="display: none;">
             <button class="back-button" onclick="ui.showCourseList()">
                 <i class="fas fa-arrow-left"></i> Geri
@@ -355,31 +341,39 @@
                     <div id="noteContainer" class="note-list"></div>
                 </div>
             </div>
-            <div class="quiz-section">
-                <button class="button primary-button" onclick="ui.startQuiz()">Sınava Başla</button>
-                <div class="quiz-card">
-                    <h3 id="quizQuestion"></h3>
-                    <div class="quiz-options" id="quizOptions"></div>
-                    <div class="progress-bar">
-                        <div class="progress" id="quizProgress"></div>
-                    </div>
-                    <div class="quiz-navigation">
-                        <button class="button" onclick="ui.prevQuestion()" id="prevBtn">Önceki</button>
-                        <span id="questionCounter"></span>
-                        <button class="button" onclick="ui.nextQuestion()" id="nextBtn">Sonraki</button>
-                    </div>
-                </div>
-                <div class="quiz-report" id="quizReport">
-                    <h3>Sınav Sonucu</h3>
-                    <p>Doğru: <span id="correctCount">0</span></p>
-                    <p>Yanlış: <span id="wrongCount">0</span></p>
-                </div>
-            </div>
         </div>
 
+        <!-- Sınav Listesi -->
         <div id="quizPage" class="quiz-page">
             <h2>Tüm Sınavlar</h2>
             <div id="quizList"></div>
+        </div>
+
+        <!-- Sınav Detay Sayfası -->
+        <div id="quizDetail" class="quiz-detail-page">
+            <div class="quiz-header">
+                <button class="back-button" onclick="ui.returnToQuizList()">
+                    <i class="fas fa-arrow-left"></i> Geri
+                </button>
+                <div class="progress-bar">
+                    <div class="progress" id="quizGlobalProgress"></div>
+                </div>
+            </div>
+            <div class="quiz-card">
+                <h3 id="quizQuestion"></h3>
+                <div class="quiz-options" id="quizOptions"></div>
+                <div class="quiz-navigation">
+                    <button class="button" onclick="QuizManager.prevQuestion()" id="quizPrevBtn">Önceki</button>
+                    <span id="questionCounter"></span>
+                    <button class="button" onclick="QuizManager.nextQuestion()" id="quizNextBtn">Sonraki</button>
+                </div>
+            </div>
+            <div class="quiz-report" id="quizReport">
+                <h3>Sınav Sonucu</h3>
+                <p>Doğru: <span id="correctCount">0</span></p>
+                <p>Yanlış: <span id="wrongCount">0</span></p>
+                <button class="button primary-button" onclick="ui.returnToQuizList()">Tamamla</button>
+            </div>
         </div>
     </div>
 
@@ -389,62 +383,100 @@
                 this.questions = [];
                 this.currentQuestionIndex = 0;
                 this.score = { correct: 0, wrong: 0 };
-                this.userAnswers = [];
                 this.allQuestions = {
-                    1: {courseId: 1, title: "Fizik Sınavları", questions: [
-                        {question: "Kuvvetin SI birimi nedir?", options: ["Newton", "Joule", "Watt"], answer: 0},
-                        {question: "Hareket yasalarını kim formüle etmiştir?", options: ["Newton", "Einstein", "Galileo"], answer: 0}
-                    ]},
-                    2: {courseId: 2, title: "Kimya Sınavları", questions: [
-                        {question: "Karbonun atom numarası nedir?", options: ["6", "12", "14"], answer: 0}
-                    ]},
-                    3: {courseId: 3, title: "Biyoloji Sınavları", questions: [
-                        {question: "Mitokondri hücrenin...?", options: ["Enerji üretim merkezi", "Çekirdek", "Sentez merkezi"], answer: 0}
-                    ]}
+                    1: {
+                        courseId: 1,
+                        title: "Fizik Sınavı",
+                        questions: [
+                            { question: "Kuvvetin SI birimi nedir?", options: ["Newton", "Joule", "Watt"], answer: 0 },
+                            { question: "Hareket yasalarını kim formüle etmiştir?", options: ["Newton", "Einstein", "Galileo"], answer: 0 }
+                        ]
+                    },
+                    2: {
+                        courseId: 2,
+                        title: "Kimya Sınavı",
+                        questions: [
+                            { question: "Karbonun atom numarası nedir?", options: ["6", "12", "14"], answer: 0 },
+                            { question: "Periyodik tablodaki ilk element nedir?", options: ["Hidrojen", "Helyum", "Lityum"], answer: 0 }
+                        ]
+                    },
+                    3: {
+                        courseId: 3,
+                        title: "Biyoloji Sınavı",
+                        questions: [
+                            { question: "Mitokondri hücrenin...?", options: ["Enerji üretim merkezi", "Çekirdek", "Sentez merkezi"], answer: 0 },
+                            { question: "Fotosentez yapan organel nedir?", options: ["Kloroplast", "Mitokondri", "Ribozom"], answer: 0 }
+                        ]
+                    }
                 };
             }
 
-            initQuestions(lessonId) {
-                const quizData = {
-                    1: [
-                        {question: "Hız nedir?", options: ["Yönü olan sürat", "İvme oranı", "Konum değişimi"], answer: 0},
-                        {question: "F=ma neyi temsil eder?", options: ["Newton'un İkinci Yasası", "Ohm Yasası", "Yerçekimi Yasası"], answer: 0}
-                    ],
-                    2: [
-                        {question: "Saf suyun pH değeri nedir?", options: ["7", "5", "10"], answer: 0}
-                    ],
-                    3: [
-                        {question: "Fotosentez nerede gerçekleşir?", options: ["Kloroplast", "Mitokondri", "Ribozom"], answer: 0}
-                    ]
-                };
-                this.questions = quizData[lessonId] || [];
-                this.resetProgress();
-            }
+            startQuiz(courseId) {
+                const quiz = this.allQuestions[courseId];
+                if (!quiz) return;
 
-            getQuizByCourse(courseId) {
-                return this.allQuestions[courseId] || null;
-            }
-
-            getAllQuizzes() {
-                return Object.values(this.allQuestions);
-            }
-
-            resetProgress() {
+                this.questions = quiz.questions;
                 this.currentQuestionIndex = 0;
                 this.score = { correct: 0, wrong: 0 };
-                this.userAnswers = [];
+                ui.showQuizDetail();
+                this.renderQuestion();
+            }
+
+            renderQuestion() {
+                document.getElementById('quizQuestion').textContent = this.currentQuestion.question;
+                const optionsContainer = document.getElementById('quizOptions');
+                optionsContainer.innerHTML = this.currentQuestion.options.map((option, index) => `
+                    <div class="quiz-option" onclick="QuizManager.checkAnswer(${index})">${option}</div>
+                `).join('');
+
+                document.getElementById('questionCounter').textContent = 
+                    `${this.currentQuestionIndex + 1}/${this.questions.length}`;
+
+                document.getElementById('quizGlobalProgress').style.width = 
+                    `${(this.currentQuestionIndex / this.questions.length) * 100}%`;
+
+                document.getElementById('quizPrevBtn').disabled = this.currentQuestionIndex === 0;
+                document.getElementById('quizNextBtn').textContent = 
+                    this.currentQuestionIndex === this.questions.length - 1 ? 'Bitir' : 'Sonraki';
+            }
+
+            static checkAnswer(selectedIndex) {
+                const quizManager = ui.courseManager.quizManager;
+                const isCorrect = selectedIndex === quizManager.currentQuestion.answer;
+
+                if (isCorrect) quizManager.score.correct++;
+                else quizManager.score.wrong++;
+
+                const options = document.querySelectorAll('.quiz-option');
+                options.forEach((option, index) => {
+                    option.classList.remove('correct', 'wrong');
+                    if (index === quizManager.currentQuestion.answer) option.classList.add('correct');
+                    else if (index === selectedIndex && !isCorrect) option.classList.add('wrong');
+                });
+            }
+
+            static nextQuestion() {
+                const quizManager = ui.courseManager.quizManager;
+                if (quizManager.currentQuestionIndex === quizManager.questions.length - 1) {
+                    document.getElementById('quizReport').style.display = 'block';
+                    document.getElementById('correctCount').textContent = quizManager.score.correct;
+                    document.getElementById('wrongCount').textContent = quizManager.score.wrong;
+                } else {
+                    quizManager.currentQuestionIndex++;
+                    quizManager.renderQuestion();
+                }
+            }
+
+            static prevQuestion() {
+                const quizManager = ui.courseManager.quizManager;
+                if (quizManager.currentQuestionIndex > 0) {
+                    quizManager.currentQuestionIndex--;
+                    quizManager.renderQuestion();
+                }
             }
 
             get currentQuestion() {
                 return this.questions[this.currentQuestionIndex];
-            }
-
-            checkAnswer(selectedIndex) {
-                const isCorrect = selectedIndex === this.currentQuestion.answer;
-                if (isCorrect) this.score.correct++;
-                else this.score.wrong++;
-                this.userAnswers[this.currentQuestionIndex] = selectedIndex;
-                return isCorrect;
             }
         }
 
@@ -463,8 +495,8 @@
                         title: "Fizik",
                         description: "Temel fizik prensiplerini öğrenin",
                         lessons: [
-                            {id: 1, title: "Newton Mekaniği", video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4", notes: []},
-                            {id: 2, title: "Termodinamik", video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4", notes: []}
+                            { id: 1, title: "Newton Mekaniği", video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", notes: [] },
+                            { id: 2, title: "Termodinamik", video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4", notes: [] }
                         ]
                     },
                     {
@@ -472,8 +504,8 @@
                         title: "Kimya",
                         description: "Temel kimya prensiplerini keşfedin",
                         lessons: [
-                            {id: 1, title: "Atom Yapısı", video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4", notes: []},
-                            {id: 2, title: "Kimyasal Tepkimeler", video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4", notes: []}
+                            { id: 1, title: "Atom Yapısı", video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", notes: [] },
+                            { id: 2, title: "Kimyasal Tepkimeler", video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4", notes: [] }
                         ]
                     },
                     {
@@ -481,8 +513,8 @@
                         title: "Biyoloji",
                         description: "Yaşam bilimini inceleyin",
                         lessons: [
-                            {id: 1, title: "Hücre Biyolojisi", video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4", notes: []},
-                            {id: 2, title: "Genetik", video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4", notes: []}
+                            { id: 1, title: "Hücre Biyolojisi", video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4", notes: [] },
+                            { id: 2, title: "Genetik", video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4", notes: [] }
                         ]
                     }
                 ];
@@ -494,7 +526,11 @@
 
             addNote(noteText) {
                 if (!this.currentLesson) return;
-                const note = {id: Date.now(), content: noteText, timestamp: new Date().toLocaleString()};
+                const note = {
+                    id: Date.now(),
+                    content: noteText,
+                    timestamp: new Date().toLocaleString()
+                };
                 const lesson = this.currentCourse.lessons.find(lesson => lesson.id === this.currentLesson.id);
                 lesson.notes.push(note);
                 this.saveCourses();
@@ -521,15 +557,28 @@
 
             init() {
                 this.renderCourses();
+                this.renderQuizList();
+                this.initTheme();
                 this.initEventListeners();
+            }
+
+            initTheme() {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                document.body.setAttribute('data-theme', savedTheme);
             }
 
             initEventListeners() {
                 document.addEventListener('click', (e) => {
-                    if(!e.target.closest('.user-card')) {
+                    if (!e.target.closest('.user-card')) {
                         document.querySelector('.user-menu').classList.remove('active');
                     }
                 });
+            }
+
+            toggleTheme() {
+                const newTheme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                document.body.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
             }
 
             renderCourses() {
@@ -544,17 +593,16 @@
             }
 
             showCourseDetail(courseId) {
-                this.courseManager.currentCourse = this.courseManager.courses.find(course => course.id === courseId);
-                document.getElementById('courseList').style.display = 'none';
-                document.getElementById('courseDetail').style.display = 'block';
+                this.courseManager.currentCourse = this.courseManager.courses.find(c => c.id === courseId);
+                this.showPage('courseDetail');
                 this.renderLessons();
             }
 
             showCourseList() {
-                document.getElementById('courseList').style.display = 'block';
-                document.getElementById('courseDetail').style.display = 'none';
+                this.showPage('courseList');
                 this.courseManager.currentCourse = null;
                 this.courseManager.currentLesson = null;
+                this.renderCourses();
             }
 
             renderLessons() {
@@ -568,10 +616,11 @@
             }
 
             loadLesson(lessonId) {
-                this.courseManager.currentLesson = this.courseManager.currentCourse.lessons.find(lesson => lesson.id === lessonId);
+                this.courseManager.currentLesson = this.courseManager.currentCourse.lessons.find(l => l.id === lessonId);
                 const videoPlayer = document.getElementById('lessonVideo');
                 videoPlayer.src = this.courseManager.currentLesson.video;
                 videoPlayer.load();
+                videoPlayer.play().catch(error => console.log('Video otomatik oynatma engellendi:', error));
                 this.renderNotes();
             }
 
@@ -596,11 +645,13 @@
             saveNote() {
                 const input = document.getElementById('noteInput');
                 const text = input.value.trim();
-                if(text && this.courseManager.currentLesson) {
+                if (text && this.courseManager.currentLesson) {
                     this.courseManager.addNote(text);
                     this.renderNotes();
                     input.value = '';
                     input.focus();
+                } else {
+                    alert('Lütfen not metni girin!');
                 }
             }
 
@@ -609,142 +660,58 @@
                 this.renderNotes();
             }
 
-            startQuiz() {
-                if (!this.courseManager.currentLesson) return;
-                this.courseManager.quizManager.initQuestions(this.courseManager.currentLesson.id);
-                this.renderQuiz();
-            }
-
-            renderQuiz() {
-                document.querySelector('.quiz-section').style.display = 'block';
-                this.showQuestion();
-            }
-
-            showQuestion() {
-                const quiz = this.courseManager.quizManager;
-                if (!quiz.questions.length) {
-                    alert('Bu ders için sınav bulunamadı!');
-                    return;
-                }
-
-                document.getElementById('quizQuestion').textContent = quiz.currentQuestion.question;
-                const optionsContainer = document.getElementById('quizOptions');
-                optionsContainer.innerHTML = quiz.currentQuestion.options.map((option, index) => `
-                    <div class="quiz-option" onclick="ui.selectAnswer(${index})">${option}</div>
-                `).join('');
-
-                document.getElementById('questionCounter').textContent = 
-                    `${quiz.currentQuestionIndex + 1}/${quiz.questions.length}`;
-                
-                document.getElementById('quizProgress').style.width = 
-                    `${(quiz.currentQuestionIndex / quiz.questions.length) * 100}%`;
-
-                document.getElementById('prevBtn').disabled = quiz.currentQuestionIndex === 0;
-                document.getElementById('nextBtn').textContent = 
-                    quiz.currentQuestionIndex === quiz.questions.length - 1 ? 'Bitir' : 'Sonraki';
-            }
-
-            selectAnswer(selectedIndex) {
-                const quiz = this.courseManager.quizManager;
-                const options = document.querySelectorAll('.quiz-option');
-                const isCorrect = quiz.checkAnswer(selectedIndex);
-
-                options.forEach((option, index) => {
-                    option.classList.remove('correct', 'wrong');
-                    if (index === quiz.currentQuestion.answer) option.classList.add('correct');
-                    else if (index === selectedIndex && !isCorrect) option.classList.add('wrong');
-                });
-            }
-
-            nextQuestion() {
-                const quiz = this.courseManager.quizManager;
-                if (quiz.currentQuestionIndex === quiz.questions.length - 1) this.showReport();
-                else {
-                    quiz.currentQuestionIndex++;
-                    this.showQuestion();
-                }
-            }
-
-            prevQuestion() {
-                const quiz = this.courseManager.quizManager;
-                if (quiz.currentQuestionIndex > 0) {
-                    quiz.currentQuestionIndex--;
-                    this.showQuestion();
-                }
-            }
-
-            showReport() {
-                const quiz = this.courseManager.quizManager;
-                document.querySelector('.quiz-card').style.display = 'none';
-                document.getElementById('quizReport').style.display = 'block';
-                document.getElementById('correctCount').textContent = quiz.score.correct;
-                document.getElementById('wrongCount').textContent = quiz.score.wrong;
-            }
-
-            showQuizPage() {
-                document.getElementById('courseList').style.display = 'none';
-                document.getElementById('courseDetail').style.display = 'none';
-                document.getElementById('quizPage').style.display = 'block';
-                this.renderQuizList();
+            showQuizList() {
+                this.showPage('quizPage');
             }
 
             renderQuizList() {
-                const quizzes = this.courseManager.quizManager.getAllQuizzes();
                 const container = document.getElementById('quizList');
-                
+                const quizzes = Object.values(this.courseManager.quizManager.allQuestions);
                 container.innerHTML = quizzes.map(quiz => `
-                    <div class="course-quiz-card">
+                    <div class="course-card" onclick="ui.startQuiz(${quiz.courseId})">
                         <h3>${quiz.title}</h3>
                         <p>${quiz.questions.length} soru</p>
-                        <button class="button primary-button" onclick="ui.startCourseQuiz(${quiz.courseId})">
-                            Sınava Başla
-                        </button>
                     </div>
                 `).join('');
             }
 
-            startCourseQuiz(courseId) {
-                const quiz = this.courseManager.quizManager.getQuizByCourse(courseId);
-                if(!quiz) return alert('Sınav bulunamadı!');
-                
-                this.courseManager.quizManager.questions = quiz.questions;
-                this.courseManager.quizManager.resetProgress();
-                this.showPage('courseDetail');
-                this.renderQuiz();
+            startQuiz(courseId) {
+                this.courseManager.quizManager.startQuiz(courseId);
+                this.showQuizDetail();
+            }
+
+            showQuizDetail() {
+                this.showPage('quizDetail');
+            }
+
+            returnToQuizList() {
+                this.showPage('quizPage');
+                this.renderQuizList();
             }
 
             showPage(pageName) {
-                const pages = ['courseList', 'courseDetail', 'quizPage'];
+                const pages = ['courseList', 'courseDetail', 'quizPage', 'quizDetail'];
                 pages.forEach(page => document.getElementById(page).style.display = 'none');
                 document.getElementById(pageName).style.display = 'block';
-                
-                if(pageName === 'quizPage') this.renderQuizList();
-                if(pageName === 'courseList') this.renderCourses();
             }
         }
 
+        // Uygulama başlatıcı
+        const ui = new UI();
+        window.ui = ui;
+        window.QuizManager = QuizManager;
+
+        // Global fonksiyonlar
         function toggleUserMenu() {
             document.querySelector('.user-menu').classList.toggle('active');
         }
 
-        function showProfile() {
-            alert('Profil sayfası yakında gelecek!');
-        }
-
-        function showSettings() {
-            alert('Ayarlar sayfası yakında gelecek!');
-        }
-
         function logout() {
-            if(confirm('Çıkış yapmak istediğinize emin misiniz?')) window.location.reload();
+            if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+                localStorage.clear();
+                window.location.reload();
+            }
         }
-
-        function showPage(pageName) {
-            ui.showPage(pageName);
-        }
-
-        const ui = new UI();
-        window.ui = ui;
     </script>
 </body>
 </html>
